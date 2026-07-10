@@ -4,6 +4,7 @@
 
 html {
   height: -webkit-fill-available;
+  
   overflow: hidden;
 }
 
@@ -15,7 +16,8 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
-  font-family: 'Prompt', sans-serif:
+  font-family: 'Prompt', sans-serif;
+  
   overscroll-behavior-y: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -26,7 +28,7 @@ body {
   z-index: -1;
   border-radius: 50%;
   opacity: 0.6;
-
+  
   will-change: auto;
 }
 .shape-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #ff9a9e; }
@@ -61,12 +63,15 @@ input, textarea {
   font-size: 16px;
 }
 
+
 .mobile-bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
+  
   padding-bottom: env(safe-area-inset-bottom, 8px);
+  
   transform: translateZ(0);
   will-change: transform;
 }
