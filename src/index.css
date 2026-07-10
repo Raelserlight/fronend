@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #f2f2f7;
+  color: #1d1d1f;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  font-family: 'Prompt', sans-serif;
+}
+
+
+.bg-shape {
+  position: fixed;
+  filter: blur(100px);
+  z-index: -1;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+.shape-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #ff9a9e; }
+.shape-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: #a18cd1; }
+.shape-3 { top: 40%; left: 30%; width: 30vw; height: 30vw; background: #84fab0; }
+
+
+.glass {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent; 
+  overscroll-behavior-y: none; 
+}
+
+
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+.hide-scrollbar-mobile::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar-mobile {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.active\:scale-95:active {
+  transform: scale(0.95);
+}
