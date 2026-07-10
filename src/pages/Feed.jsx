@@ -262,7 +262,7 @@ function Feed() {
     } finally { setIsCommenting(false); }
   };
 
-  const PostForm = () => (
+  const renderPostForm = () => (
     <form onSubmit={handleCreatePost} className="glass p-4 md:p-5 flex flex-col gap-4 min-w-0 relative z-40">
       <div className="flex gap-3 items-start">
         <div className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-purple-400 to-pink-300 flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-inner">
@@ -501,7 +501,7 @@ function Feed() {
           </div>
 
           <div className="hidden md:block">
-            <PostForm />
+            {renderPostForm()}
           </div>
 
           {(activeFilter !== 'ทั้งหมด' || searchQuery) && (
@@ -778,7 +778,7 @@ function Feed() {
                   <X size={20} />
                 </button>
               </div>
-              <PostForm />
+              {renderPostForm()}
             </div>
           </div>
         </div>
