@@ -708,7 +708,7 @@ function Feed() {
         </aside>
       </div>
 
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-white/40 flex items-center justify-around px-2 pt-2 pb-safe">
+     <nav className="lg:hidden mobile-bottom-nav z-50 glass border-t border-white/40 flex items-center justify-around px-2 pt-2">
         <button
           onClick={() => setActiveMobileTab('feed')}
           className={`flex flex-col items-center gap-0.5 py-1.5 px-4 rounded-xl transition active:scale-95 ${activeMobileTab === 'feed' ? 'text-blue-600' : 'text-gray-500'}`}
