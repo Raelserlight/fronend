@@ -85,7 +85,7 @@ function Feed() {
     });
 
     socket.on('new_notification', (notif) => {
-      if (notif.recipientId === user.anonymousId) setNotifications(prev => [notif, ...prev]);
+      if (notif.recipientId === user?.anonymousId) setNotifications(prev => [notif, ...prev]);
     });
 
     socket.on('post_deleted', (deletedPostId) => {
@@ -211,7 +211,7 @@ function Feed() {
   const handleSupport = async (postId) => {
     try {
       const response = await api.put(`/posts/${postId}/support`);
-      setPosts(posts.map(post => post._id === postId ? { ...post, supportedBy: response.data.post.supportedBy } : post));
+      setPosts(currentPosts => currentPosts.map(post => post._id === postId ? { ...post, supportedBy: response.data.post.supportedBy } : post));
     } catch (error) { console.error(error); }
   };
 
@@ -288,7 +288,7 @@ function Feed() {
       <div className="flex justify-between items-center pt-2 border-t border-white/30 relative" ref={tagDropdownRef}>
         <div className="flex items-center gap-2">
           <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} className="hidden" />
-          <button type="button" onClick={() => fileInputRef.current.click()} className="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-white/50 flex items-center gap-1.5 text-sm font-medium active:scale-95">
+          <button type="button" onClick={() => fileInputRef.current?.click()} className="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-white/50 flex items-center gap-1.5 text-sm font-medium active:scale-95">
             <Image size={20} /> <span className="hidden sm:inline">รูปภาพ</span>
           </button>
 
@@ -327,7 +327,7 @@ function Feed() {
                 onClick={() => setCategory('custom')} 
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-all active:scale-95 ${category === 'custom' ? 'bg-purple-500 text-white shadow-md' : 'bg-white/60 text-gray-600 hover:bg-white'}`}
               >
-                 ตั้งแท็กเอง
+                   ตั้งแท็กเอง
               </button>
             </div>
             
@@ -399,26 +399,29 @@ function Feed() {
                 <div className="max-h-72 overflow-y-auto custom-scrollbar mt-2">
                   {notifications.length === 0 ? (
                     <div className="text-center text-gray-400 text-sm py-6">ไม่มีการแจ้งเตือนใหม่</div>
-                  ) : notifications.map(notif => (
-                    <div
-                      key={notif._id}
-                      onClick={() => handleNotificationClick(notif)}
-                      className={`p-3 rounded-xl mb-1 text-sm transition cursor-pointer active:scale-[0.98] ${notif.isRead ? 'hover:bg-white/40' : 'bg-blue-50/50 hover:bg-blue-50'}`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-full shrink-0 ${notif.type === 'support' ? 'bg-pink-100 text-pink-500' : 'bg-blue-100 text-blue-500'}`}>
-                          {notif.type === 'support' ? <Heart size={14} /> : <MessageSquare size={14} />}
-                        </div>
-                        <div>
-                          <p className="text-gray-700 leading-snug text-xs md:text-sm">
-                            <span className="font-semibold">Anonymous #{notif.senderId.substring(0, 5).toUpperCase()}</span>
-                            {notif.type === 'support' ? ' ได้กดไลค์โพสต์ของคุณ' : ' ได้คอมเมนต์ในโพสต์ของคุณ'}
-                          </p>
-                          <span className="text-[10px] text-gray-400">{timeAgo(notif.createdAt)}</span>
+                  ) : notifications.map(notif => {
+                    const senderIdStr = (notif.senderId?._id || notif.senderId || '').toString();
+                    return (
+                      <div
+                        key={notif._id}
+                        onClick={() => handleNotificationClick(notif)}
+                        className={`p-3 rounded-xl mb-1 text-sm transition cursor-pointer active:scale-[0.98] ${notif.isRead ? 'hover:bg-white/40' : 'bg-blue-50/50 hover:bg-blue-50'}`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`p-2 rounded-full shrink-0 ${notif.type === 'support' ? 'bg-pink-100 text-pink-500' : 'bg-blue-100 text-blue-500'}`}>
+                            {notif.type === 'support' ? <Heart size={14} /> : <MessageSquare size={14} />}
+                          </div>
+                          <div>
+                            <p className="text-gray-700 leading-snug text-xs md:text-sm">
+                              <span className="font-semibold">Anonymous #{senderIdStr.substring(0, 5).toUpperCase()}</span>
+                              {notif.type === 'support' ? ' ได้กดไลค์โพสต์ของคุณ' : ' ได้คอมเมนต์ในโพสต์ของคุณ'}
+                            </p>
+                            <span className="text-[10px] text-gray-400">{timeAgo(notif.createdAt)}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -525,150 +528,153 @@ function Feed() {
               <Ghost size={48} className="text-gray-400" />
               <p className="text-gray-500 font-medium">ไม่พบโพสต์ที่คุณค้นหา</p>
             </div>
-          ) : posts.map((post) => (
-            <article
-              id={`post-${post._id}`}
-              key={post._id}
-              className="glass p-4 md:p-6 transition hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(31,38,135,0.1)] relative z-10"
-            >
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-blue-400 to-cyan-300 flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-inner">
-                    {post.authorId === user?.anonymousId ? user.avatar : 'A'}
+          ) : posts.map((post) => {
+            const authorIdStr = (post.authorId?._id || post.authorId || '').toString();
+            return (
+              <article
+                id={`post-${post._id}`}
+                key={post._id}
+                className="glass p-4 md:p-6 transition hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(31,38,135,0.1)] relative z-10"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-blue-400 to-cyan-300 flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-inner">
+                      {authorIdStr === user?.anonymousId ? user?.avatar : 'A'}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-gray-800">Anonymous #{authorIdStr.substring(0, 5).toUpperCase()}</div>
+                      <div className="text-[11px] text-gray-500">{timeAgo(post.createdAt)}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-semibold text-sm text-gray-800">Anonymous #{post.authorId.substring(0, 5).toUpperCase()}</div>
-                    <div className="text-[11px] text-gray-500">{timeAgo(post.createdAt)}</div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <span 
+                      onClick={() => setActiveFilter(post.categoryTag)} 
+                      className="bg-blue-500/10 text-blue-600 px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer hover:bg-blue-500/20 transition"
+                    >
+                      #{post.categoryTag}
+                    </span>
+                    {authorIdStr === user?.anonymousId && (
+                      <button 
+                        onClick={() => handleDeletePost(post._id)}
+                        className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-full transition active:scale-95"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-1.5">
-                  <span 
-                    onClick={() => setActiveFilter(post.categoryTag)} 
-                    className="bg-blue-500/10 text-blue-600 px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer hover:bg-blue-500/20 transition"
-                  >
-                    #{post.categoryTag}
-                  </span>
-                  {post.authorId === user?.anonymousId && (
-                    <button 
-                      onClick={() => handleDeletePost(post._id)}
-                      className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-full transition active:scale-95"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  )}
-                </div>
-              </div>
-              
-              <div className="text-sm md:text-[0.95rem] text-gray-700 leading-relaxed mb-3 whitespace-pre-wrap break-words">{post.content}</div>
+                <div className="text-sm md:text-[0.95rem] text-gray-700 leading-relaxed mb-3 whitespace-pre-wrap break-words">{post.content}</div>
 
-              {post.imageUrl && (
-                <div className="mb-4 rounded-xl overflow-hidden border border-white/30 shadow-sm">
-                  <img src={post.imageUrl} alt="Post attachment" className="w-full max-h-[300px] md:max-h-[500px] object-cover" loading="lazy" />
-                </div>
-              )}
-
-              <div className="flex gap-2 border-t border-black/5 pt-3">
-                <button
-                  onClick={() => handleSupport(post._id)}
-                  className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl transition text-xs font-medium active:scale-95 ${post.supportedBy?.includes(user?.anonymousId) ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:text-blue-600 hover:bg-white/60'}`}
-                >
-                  <ThumbsUp size={16} className={post.supportedBy?.includes(user?.anonymousId) ? "fill-blue-600" : ""} />
-                  {post.supportedBy?.length || 0} ไลค์
-                </button>
-
-                <button
-                  onClick={() => toggleComments(post._id)}
-                  className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl transition text-xs font-medium active:scale-95 ${activeCommentPostId === post._id ? 'text-gray-800 bg-white/60' : 'text-gray-500 hover:text-gray-800 hover:bg-white/60'}`}
-                >
-                  <MessageSquare size={16} />
-                  {comments[post._id] ? comments[post._id].length : (post.commentCount || 0)} คอมเมนต์
-                </button>
-              </div>
-
-              {activeCommentPostId === post._id && (
-                <div className="mt-3 pt-3 border-t border-black/5 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="space-y-2 mb-3 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
-                    {(comments[post._id] || []).filter(c => !c.parentCommentId).map(comment => {
-                      const replies = (comments[post._id] || []).filter(reply => reply.parentCommentId === comment._id);
-                      const isExpanded = expandedReplies[comment._id];
-                      const aliasIcon = comment.alias?.aliasIcon || "👤";
-                      const aliasColor = comment.alias?.aliasColor || "#9ca3af";
-                      const isOP = aliasIcon === "👑";
-
-                      return (
-                        <div key={comment._id} className="space-y-1">
-                          <div className="bg-white/40 p-2.5 rounded-xl text-xs">
-                            <div className="flex justify-between items-center mb-1">
-                              <div className="font-semibold flex items-center gap-1.5" style={{ color: aliasColor }}>
-                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white shadow-sm" style={{ backgroundColor: aliasColor }}>{aliasIcon}</div>
-                                {isOP ? "เจ้าของกระทู้" : `Anonymous ${aliasIcon}`}
-                              </div>
-                              <button onClick={() => setReplyingTo(comment._id)} className="text-[10px] text-blue-500 font-medium active:scale-95 px-2 py-1">ตอบกลับ</button>
-                            </div>
-                            <div className="text-gray-700 pl-6">{comment.content}</div>
-                          </div>
-
-                          {replies.length > 0 && (
-                            <button onClick={() => toggleReplies(comment._id)} className="text-[10px] text-gray-500 ml-6 font-medium flex items-center gap-1 py-1 active:scale-95">
-                              {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-                              {isExpanded ? 'ซ่อนการตอบกลับ' : `ดูการตอบกลับ (${replies.length})`}
-                            </button>
-                          )}
-
-                          {isExpanded && replies.map(reply => {
-                            const rAliasIcon = reply.alias?.aliasIcon || "👤";
-                            const rAliasColor = reply.alias?.aliasColor || "#9ca3af";
-                            const rIsOP = rAliasIcon === "👑";
-                            return (
-                              <div key={reply._id} className="bg-white/30 p-2.5 rounded-xl text-xs ml-6 border-l-2 mb-1" style={{ borderColor: rAliasColor }}>
-                                <div className="font-semibold mb-1 flex items-center gap-1.5" style={{ color: rAliasColor }}>
-                                  <CornerDownRight size={10} className="text-gray-400" />
-                                  <div className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] text-white shadow-sm" style={{ backgroundColor: rAliasColor }}>{rAliasIcon}</div>
-                                  {rIsOP ? "เจ้าของโพสต์" : `Anonymous ${rAliasIcon}`}
-                                </div>
-                                <div className="text-gray-700 pl-5">{reply.content}</div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      );
-                    })}
-                    {(comments[post._id] || []).length === 0 && (
-                      <div className="text-center text-gray-400 text-xs py-3">ยังไม่มีคอมเมนต์ เริ่มเป็นคนแรกเลย!</div>
-                    )}
+                {post.imageUrl && (
+                  <div className="mb-4 rounded-xl overflow-hidden border border-white/30 shadow-sm">
+                    <img src={post.imageUrl} alt="Post attachment" className="w-full max-h-[300px] md:max-h-[500px] object-cover" loading="lazy" />
                   </div>
+                )}
 
-                  <form onSubmit={(e) => handleCreateComment(e, post._id)} className="flex flex-col gap-2">
-                    {replyingTo && (
-                      <div className="flex justify-between items-center bg-blue-50 text-blue-600 text-[10px] px-3 py-1.5 rounded-lg">
-                        <span>กำลังตอบกลับคอมเมนต์...</span>
-                        <button type="button" onClick={() => setReplyingTo(null)} className="font-bold hover:text-red-500">✕ ยกเลิก</button>
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        inputMode="text"
-                        enterKeyHint="send"
-                        value={commentInput}
-                        onChange={(e) => setCommentInput(e.target.value)}
-                        placeholder={replyingTo ? "พิมพ์ข้อความตอบกลับ..." : "แสดงความคิดเห็น..."}
-                        className="flex-1 bg-white/50 border border-white/50 px-3 py-2.5 rounded-full outline-none focus:bg-white/80 transition text-xs"
-                      />
-                      <button
-                        type="submit"
-                        disabled={isCommenting || !commentInput.trim()}
-                        className="bg-blue-500 text-white px-3 py-2.5 rounded-full font-medium shadow-md hover:bg-blue-600 transition disabled:opacity-50 flex items-center active:scale-95 min-w-[40px] justify-center"
-                      >
-                        <Send size={15} />
-                      </button>
-                    </div>
-                  </form>
+                <div className="flex gap-2 border-t border-black/5 pt-3">
+                  <button
+                    onClick={() => handleSupport(post._id)}
+                    className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl transition text-xs font-medium active:scale-95 ${post.supportedBy?.includes(user?.anonymousId) ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:text-blue-600 hover:bg-white/60'}`}
+                  >
+                    <ThumbsUp size={16} className={post.supportedBy?.includes(user?.anonymousId) ? "fill-blue-600" : ""} />
+                    {post.supportedBy?.length || 0} ไลค์
+                  </button>
+
+                  <button
+                    onClick={() => toggleComments(post._id)}
+                    className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl transition text-xs font-medium active:scale-95 ${activeCommentPostId === post._id ? 'text-gray-800 bg-white/60' : 'text-gray-500 hover:text-gray-800 hover:bg-white/60'}`}
+                  >
+                    <MessageSquare size={16} />
+                    {comments[post._id] ? comments[post._id].length : (post.commentCount || 0)} คอมเมนต์
+                  </button>
                 </div>
-              )}
-            </article>
-          ))}
+
+                {activeCommentPostId === post._id && (
+                  <div className="mt-3 pt-3 border-t border-black/5 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="space-y-2 mb-3 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+                      {(comments[post._id] || []).filter(c => !c.parentCommentId).map(comment => {
+                        const replies = (comments[post._id] || []).filter(reply => reply.parentCommentId === comment._id);
+                        const isExpanded = expandedReplies[comment._id];
+                        const aliasIcon = comment.alias?.aliasIcon || "👤";
+                        const aliasColor = comment.alias?.aliasColor || "#9ca3af";
+                        const isOP = aliasIcon === "👑";
+
+                        return (
+                          <div key={comment._id} className="space-y-1">
+                            <div className="bg-white/40 p-2.5 rounded-xl text-xs">
+                              <div className="flex justify-between items-center mb-1">
+                                <div className="font-semibold flex items-center gap-1.5" style={{ color: aliasColor }}>
+                                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white shadow-sm" style={{ backgroundColor: aliasColor }}>{aliasIcon}</div>
+                                  {isOP ? "เจ้าของกระทู้" : `Anonymous ${aliasIcon}`}
+                                </div>
+                                <button onClick={() => setReplyingTo(comment._id)} className="text-[10px] text-blue-500 font-medium active:scale-95 px-2 py-1">ตอบกลับ</button>
+                              </div>
+                              <div className="text-gray-700 pl-6">{comment.content}</div>
+                            </div>
+
+                            {replies.length > 0 && (
+                              <button onClick={() => toggleReplies(comment._id)} className="text-[10px] text-gray-500 ml-6 font-medium flex items-center gap-1 py-1 active:scale-95">
+                                {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+                                {isExpanded ? 'ซ่อนการตอบกลับ' : `ดูการตอบกลับ (${replies.length})`}
+                              </button>
+                            )}
+
+                            {isExpanded && replies.map(reply => {
+                              const rAliasIcon = reply.alias?.aliasIcon || "👤";
+                              const rAliasColor = reply.alias?.aliasColor || "#9ca3af";
+                              const rIsOP = rAliasIcon === "👑";
+                              return (
+                                <div key={reply._id} className="bg-white/30 p-2.5 rounded-xl text-xs ml-6 border-l-2 mb-1" style={{ borderColor: rAliasColor }}>
+                                  <div className="font-semibold mb-1 flex items-center gap-1.5" style={{ color: rAliasColor }}>
+                                    <CornerDownRight size={10} className="text-gray-400" />
+                                    <div className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] text-white shadow-sm" style={{ backgroundColor: rAliasColor }}>{rAliasIcon}</div>
+                                    {rIsOP ? "เจ้าของโพสต์" : `Anonymous ${rAliasIcon}`}
+                                  </div>
+                                  <div className="text-gray-700 pl-5">{reply.content}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                      {(comments[post._id] || []).length === 0 && (
+                        <div className="text-center text-gray-400 text-xs py-3">ยังไม่มีคอมเมนต์ เริ่มเป็นคนแรกเลย!</div>
+                      )}
+                    </div>
+
+                    <form onSubmit={(e) => handleCreateComment(e, post._id)} className="flex flex-col gap-2">
+                      {replyingTo && (
+                        <div className="flex justify-between items-center bg-blue-50 text-blue-600 text-[10px] px-3 py-1.5 rounded-lg">
+                          <span>กำลังตอบกลับคอมเมนต์...</span>
+                          <button type="button" onClick={() => setReplyingTo(null)} className="font-bold hover:text-red-500">✕ ยกเลิก</button>
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          inputMode="text"
+                          enterKeyHint="send"
+                          value={commentInput}
+                          onChange={(e) => setCommentInput(e.target.value)}
+                          placeholder={replyingTo ? "พิมพ์ข้อความตอบกลับ..." : "แสดงความคิดเห็น..."}
+                          className="flex-1 bg-white/50 border border-white/50 px-3 py-2.5 rounded-full outline-none focus:bg-white/80 transition text-xs"
+                        />
+                        <button
+                          type="submit"
+                          disabled={isCommenting || !commentInput.trim()}
+                          className="bg-blue-500 text-white px-3 py-2.5 rounded-full font-medium shadow-md hover:bg-blue-600 transition disabled:opacity-50 flex items-center active:scale-95 min-w-[40px] justify-center"
+                        >
+                          <Send size={15} />
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </article>
+            );
+          })}
         </main>
 
         <aside className="hidden lg:block sticky top-[90px] h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar glass p-5">
