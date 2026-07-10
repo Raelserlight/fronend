@@ -698,7 +698,7 @@ function Feed() {
                 }} 
                 className="border-b border-black/5 pb-3 cursor-pointer hover:opacity-70 transition"
               >
-                <div className="text-sm font-medium text-gray-800 mb-1 leading-snug line-clamp-2">{post.content}</div>
+              <div className="text-sm font-medium text-gray-800 mb-1 leading-snug line-clamp-2">{post.content}</div>
                 <div className="text-xs text-gray-500 flex items-center gap-1">
                   <ThumbsUp size={12} className="text-blue-500" /> {post.supportCount || 0} ไลค์ • #{post.categoryTag}
                 </div>
