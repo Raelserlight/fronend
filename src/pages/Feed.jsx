@@ -63,7 +63,7 @@ function Feed() {
 
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [showMobilePost, setShowMobilePost] = useState(false);
-  const [activeMobileTab, setActiveMobileTab] = useState('feed'); // feed | trending | notif
+  const [activeMobileTab, setActiveMobileTab] = useState('feed');
   const tagDropdownRef = useRef(null);
   const notifDropdownRef = useRef(null);
 
@@ -311,7 +311,7 @@ function Feed() {
         </button>
 
         {showTagDropdown && (
-          <div className="absolute bottom-12 left-0 w-[min(280px,90vw)] glass p-3 rounded-2xl shadow-2xl border border-white/50 z-50 animate-in fade-in slide-in-from-bottom-2">
+          <div className="absolute top-full left-0 mt-2 w-[min(280px,90vw)] glass p-3 rounded-2xl shadow-2xl border border-white/50 z-[999] animate-in fade-in slide-in-from-top-2">
             <div className="flex flex-wrap gap-2 max-h-44 overflow-y-auto custom-scrollbar p-1">
               {CATEGORIES.map(cat => (
                 <button 
